@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function FormPage() {
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ function FormPage() {
     prothrombin: '',
     stage: '',
   });
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,13 +31,30 @@ function FormPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
     // Convert age from years to days for the submission
     const submissionData = {
       ...formData,
       age: formData.age * 365, // Convert age to days
     };
 
-    console.log(submissionData); // Example submission logic
+    fetch('/api/predict', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submissionData), // Use the transformed submissionData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      navigate('/prediction', { state: { predictionData: data } });
+    })
+    .catch(error => {
+      console.error('Error during prediction:', error);
+    });
+
+    //console.log(submissionData); // Example submission logic
     // Assuming you would call your backend API here and then:
     // history.push('/someRouteAfterSubmission', { someState: 'Some state to pass' });
 
