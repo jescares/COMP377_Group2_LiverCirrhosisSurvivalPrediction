@@ -28,7 +28,7 @@ sample_data = {
     'Alk_Phos': [80.0]          # Adjust alkaline phosphatase level (normal)
 }
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
     # Extract user input from the HTTP request (not used in this case)
     # data = request.get_json()
