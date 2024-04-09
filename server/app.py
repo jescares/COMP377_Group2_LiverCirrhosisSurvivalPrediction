@@ -1,11 +1,16 @@
+import os
 from flask import Flask, request, jsonify
 import pickle
 import numpy as np
 
 app = Flask(__name__)
 
+# Get the directory of the current file
+current_directory = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(current_directory, 'logistic_regression_model.pkl')
+
 # Load the serialized logistic regression model
-with open('logistic_regression_model.pkl', 'rb') as model_file:
+with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
 @app.route('/predict', methods=['POST'])
