@@ -63,7 +63,7 @@ function FormPage() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div>
+      {/* <div>
         <label>Status:</label>
         <select name="status" value={formData.status} onChange={handleChange}>
           <option value="">Select</option>
@@ -71,7 +71,7 @@ function FormPage() {
           <option value="CL">Survived due to treatment</option>
           <option value="D">Death</option>
         </select>
-      </div>
+      </div> */}
 
       <div>
         <label>Drug:</label>
