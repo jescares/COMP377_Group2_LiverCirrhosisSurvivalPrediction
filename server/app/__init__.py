@@ -1,21 +1,16 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
+from flask_mongoengine import MongoEngine
 
-db = SQLAlchemy()
-bcrypt = Bcrypt()
+db = MongoEngine()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///yourdatabase.db'  # or other configurations
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config["MONGO_URI"] = "mongodb://localhost:27017/AI_prediction"
+    app.config['SECRET_KEY'] = 'your_secret_key'  
     db.init_app(app)
-    bcrypt.init_app(app)
 
     with app.app_context():
         from . import routes  # Import routes
         from . import models  # Ensure models are recognized
-
-        db.create_all()
 
     return app
