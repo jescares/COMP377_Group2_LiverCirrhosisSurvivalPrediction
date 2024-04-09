@@ -1,5 +1,4 @@
-from flask import request, jsonify, render_template
-from app import app
+from flask import request, jsonify, render_template, current_app as app
 from .loaders import load_model, load_encoder
 import numpy as np
 import pandas as pd
@@ -49,7 +48,17 @@ def predict():
     # Make prediction using the loaded logistic regression model
     # prediction = model.predict(user_input)
     prediction = model.predict(user_input_final)
-
+    
+    # Example of using PyMongo to store the prediction result
+    db = app.mongo.get_database('AI_prediction')  # Assuming 'AI_prediction' is your database name
+    predictions_collection = db.predictions  # Assuming 'predictions' is your collection name
+    
+    # Example document structure, adjust as necessary
+    prediction_document = {
+        'user_input': data,
+        'prediction_result': prediction.tolist(),
+    }
+    predictions_collection.insert_one(prediction_document)
     # Return prediction as JSON response
     return jsonify({'prediction': prediction.tolist()})
 
