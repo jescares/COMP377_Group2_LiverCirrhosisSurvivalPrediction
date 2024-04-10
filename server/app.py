@@ -3,8 +3,10 @@ from flask import Flask, request, jsonify
 import pickle
 import numpy as np
 import pandas as pd
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, origins='http://127.0.0.1:5173')
 
 # Get the directory of the current file
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -14,33 +16,55 @@ model_path = os.path.join(current_directory, 'logistic_regression_model.pkl')
 with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
-# Sample data for prediction
-sample_data = {
-    'Bilirubin': [1.0],         # Adjust bilirubin level (higher)
-    'Copper': [100.0],          # Adjust copper level (higher)
-    'Prothrombin': [11.0],      # Adjust prothrombin time (normal)
-    'Stage': [1],               # Adjust stage of disease (early)
-    'Edema_N': [1],             # No edema
-    'Hepatomegaly_N': [1],      # No hepatomegaly
-    'Hepatomegaly_Y': [0],      # No hepatomegaly
-    'Ascites_Y': [0],           # No ascites
-    'Ascites_N': [1],           # No ascites
-    'Alk_Phos': [80.0]          # Adjust alkaline phosphatase level (normal)
-}
-
-@app.route('/predict', methods=['GET', 'POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
-    # Extract user input from the HTTP request (not used in this case)
-    # data = request.get_json()
+    # Extract user input from the HTTP request
+    data = request.json
 
-    # Prepare sample data for prediction
-    new_sample_data = pd.DataFrame(sample_data)
+    # Handle logic for Ascites, Hepatomegaly, and Edema
+    if data['ascites'] == 'Y':
+        data['ascites_n'] = 0
+        data['ascites_y'] = 1
+    else:
+        data['ascites_n'] = 1
+        data['ascites_y'] = 0
 
-    # Preprocess the sample data for prediction (reshape if necessary)
-    user_input = new_sample_data.values
+    if data['hepatomegaly'] == 'Y':
+        data['hepatomegaly_n'] = 0
+        data['hepatomegaly_y'] = 1
+    else:
+        data['hepatomegaly_n'] = 1
+        data['hepatomegaly_y'] = 0
+
+    if data['edema'] == 'Y':
+        data['edema_n'] = 0
+        data['edema_y'] = 1
+    else:
+        data['edema_n'] = 1
+        data['edema_y'] = 0
+
+    # Prepare user input data for prediction
+    user_input = {
+        'Bilirubin': [data['bilirubin']],
+        'Copper': [data['copper']],
+        'Prothrombin': [data['prothrombin']],
+        'Stage': [data['stage']],
+        'Edema_N': [data['edema_n']],
+        'Hepatomegaly_N': [data['hepatomegaly_n']],
+        'Hepatomegaly_Y': [data['hepatomegaly_y']],
+        'Ascites_Y': [data['ascites_y']],
+        'Ascites_N': [data['ascites_n']],
+        'Alk_Phos': [data['alk_phos']]
+    }
+
+    # Convert user input data into a DataFrame
+    new_user_input = pd.DataFrame(user_input)
+
+    # Preprocess the user input data for prediction
+    user_input_values = new_user_input.values
 
     # Make prediction using the loaded logistic regression model
-    prediction = model.predict(user_input)
+    prediction = model.predict(user_input_values)
 
     # Return prediction as JSON response
     return jsonify({'prediction': prediction.tolist()})
