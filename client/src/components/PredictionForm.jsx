@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './style.css'; 
+import axios from 'axios';
 
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const PredictionForm = () => {
     cholesterol: '',
     albumin: '',
     copper: '',
-    alkPhos: '',
+    alk_phos: '',
     sgot: '',
     triglycerides: '',
     platelets: '',
@@ -29,10 +30,17 @@ const PredictionForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Handle backend form submission
-    console.log(formData);
+    axios.post('http://127.0.0.1:5000/predict', formData)
+      .then(response => {
+        // Handle prediction response
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle error
+        console.error('Error:', error);
+      });
   };
-
+  
   // Function to convert age from years to days
   const convertAgeToDays = (ageYears) => {
     return ageYears * 365; // Assume average year has 365 days
@@ -165,8 +173,8 @@ const PredictionForm = () => {
           <label>Alk Phos (U/liter):</label>
           <input
             type="text"
-            name="alkPhos"
-            value={formData.alkPhos}
+            name="alk_phos"
+            value={formData.alk_phos}
             onChange={handleChange}
           />
         </div>
@@ -222,6 +230,7 @@ const PredictionForm = () => {
         </div>
         <button type="submit">Submit</button>
       </form>
+    
     </div>
   );
 };
