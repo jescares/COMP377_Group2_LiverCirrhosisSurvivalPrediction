@@ -14,20 +14,69 @@ const LoginPage = () => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+//   const handleSubmit = (event) => {
+//   event.preventDefault();
 
-    // Perform validation
-    if (!username.includes('@my.centennialcollege.ca')) {
-      setErrorMessage('Username must be a valid Centennial College email address.');
-      return;
-    }
+//   if (!username.includes('@my.centennialcollege.ca')) {
+//     setErrorMessage('Username must be a valid Centennial College email address.');
+//     return;
+//   }
 
-    // Furthur validiation, if required
+//   // Post user data to GraphQL API
+//   fetch('http://localhost:4000/graphql', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Accept': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       query: `
+//         mutation {
+//           addUser(username: "${username}", password: "${password}") {
+//             id
+//           }
+//         }
+//       `
+//     })
+//   })
+//   .then(r => r.json())
+//   .then(data => console.log('data returned:', data));
 
-    // Navigate to PredictionForm if login successful
-    window.location.href = '/prediction-form';
-  };
+//   window.location.href = '/prediction-form';
+// };
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+
+  if (!username.includes('@my.centennialcollege.ca')) {
+    setErrorMessage('Username must be a valid Centennial College email address.');
+    return;
+  }
+
+  // Post user data to GraphQL API
+  fetch('http://localhost:4000/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          addUser(username: "${username}", password: "${password}") {
+            id
+          }
+        }
+      `
+    })
+  })
+  .then(r => r.json())
+  .then(data => console.log('data returned:', data));
+
+  window.location.href = '/prediction-form';
+};
+
+
 
   return (
     <div className="container">
