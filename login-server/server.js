@@ -1,13 +1,13 @@
-const { ApolloServer, gql } = require('apollo-server-express');
-const express = require('express');
-const mongoose = require('mongoose');
-const User = require('./models/User');
-const bcrypt = require('bcrypt');
+const { ApolloServer, gql } = require("apollo-server-express");
+const express = require("express");
+const mongoose = require("mongoose");
+const User = require("./models/User");
+const bcrypt = require("bcrypt");
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/myDatabase', {
+mongoose.connect("mongodb://localhost:27017/userdb_comp377", {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 const typeDefs = gql`
@@ -19,7 +19,7 @@ const typeDefs = gql`
 
   type Query {
     users: [User]
-    login(username: String!, password:String!):User
+    login(username: String!, password: String!): User
   }
 
   type Mutation {
@@ -30,26 +30,26 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     users: async () => await User.find({}),
-    login: async (_, {username, password}) =>{
-      const user = await User.findOne({username});
+    login: async (_, { username, password }) => {
+      const user = await User.findOne({ username });
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
-        throw new Error('Invalid password');
+        throw new Error("Invalid password");
       }
-      return user; 
-    }
+      return user;
+    },
   },
   Mutation: {
     addUser: async (_, { username, password }) => {
-      const hashedPassword= await bcrypt.hash(password, 10); // hash the password
+      const hashedPassword = await bcrypt.hash(password, 10); // hash the password
       const newUser = new User({ username, password: hashedPassword });
       await newUser.save();
       return newUser;
-    }
-  }
+    },
+  },
 };
 
 const app = express();

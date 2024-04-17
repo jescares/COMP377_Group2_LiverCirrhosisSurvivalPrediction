@@ -35,14 +35,20 @@ const PredictionForm = () => {
     event.preventDefault();
     axios.post('http://127.0.0.1:5000/predict', formData)
       .then(response => {
-        const { prediction } = response.data;
-        setPredictionResult(prediction === 0 ? 'Based on the data above, the patient will survive.' : 'Based on the data above, the patient is at risk of death.');
+        const prediction = response.data.prediction[0]; // Access the first element of the array
+        console.log('Prediction:', prediction);
+        if (prediction === 0) {
+          setPredictionResult('Based on the data above, the patient is likely to survive.');
+        } else {
+          setPredictionResult('Based on the data above, the patient is at risk of death.');
+        }
       })
       .catch(error => {
         console.error('Error:', error);
         setPredictionResult('An error occurred while processing the prediction.');
       });
   };
+  
 
   
   // Function to convert age from years to days
