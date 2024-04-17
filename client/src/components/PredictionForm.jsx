@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './style.css'; 
 import axios from 'axios';
+import ResultForm from './ResultForm';
 
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,8 @@ const PredictionForm = () => {
     stage: '',
   });
 
+  const [predictionResult, setPredictionResult] = useState(null);
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -39,6 +42,7 @@ const PredictionForm = () => {
         // Handle error
         console.error('Error:', error);
       });
+      window.location.href = '/result-form';
   };
   
   // Function to convert age from years to days
@@ -230,7 +234,7 @@ const PredictionForm = () => {
         </div>
         <button type="submit">Submit</button>
       </form>
-    
+      <ResultForm predictionResult={predictionResult} />
     </div>
   );
 };
