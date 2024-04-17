@@ -35,15 +35,16 @@ const PredictionForm = () => {
     event.preventDefault();
     axios.post('http://127.0.0.1:5000/predict', formData)
       .then(response => {
-        // Handle prediction response
-        console.log(response.data);
-      })
-      .catch(error => {
-        // Handle error
-        console.error('Error:', error);
-      });
-      window.location.href = '/result-form';
-  };
+      // Handle prediction response
+      console.log(response.data);
+      setPredictionResult(response.data.prediction);
+      // Redirect to the results page if you're using React Router, otherwise, just update the state
+      window.location.href = '/result-form'; 
+    })
+    .catch(error => {
+      // Handle error
+      console.error('Error:', error);
+  });
   
   // Function to convert age from years to days
   const convertAgeToDays = (ageYears) => {
@@ -234,7 +235,7 @@ const PredictionForm = () => {
         </div>
         <button type="submit">Submit</button>
       </form>
-      <ResultForm predictionResult={predictionResult} />
+      <ResultForm formData={formData} predictionResult={predictionResult} />
     </div>
   );
 };
